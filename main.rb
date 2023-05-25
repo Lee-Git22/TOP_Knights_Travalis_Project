@@ -1,13 +1,3 @@
-ROW_REF = {
-  'A' => 0,
-  'B' => 1,
-  'C' => 2,
-  'D' => 3,
-  'E' => 4,
-  'F' => 5,
-  'G' => 6,
-  'H' => 7
-}
 
 class Knight
   attr_accessor :position, :possible_moves
@@ -17,6 +7,25 @@ class Knight
     @possible_moves = possible_moves
   end
 
+  def calcMoves(current_position=position)
+    newMoves = []
+
+    newMoves << [ current_position[0]+2, current_position[1]+1 ] 
+    newMoves << [ current_position[0]-2, current_position[1]+1 ]
+    newMoves << [ current_position[0]+2, current_position[1]-1 ]
+    newMoves << [ current_position[0]-2, current_position[1]-1 ]
+    newMoves << [ current_position[0]+1, current_position[1]+2 ]
+    newMoves << [ current_position[0]-1, current_position[1]+2 ]
+    newMoves << [ current_position[0]+1, current_position[1]-2 ]
+    newMoves << [ current_position[0]-1, current_position[1]-2 ]
+
+  end
+
+  def validateMoves(newMoves)
+    newMoves.select! {|newMove| 
+    newMove[0] <= 7 and newMove[0] >= 0 and 
+    newMove[1] <= 7 and newMove[1] >= 0}
+  end
 end
 
 class Board
@@ -43,7 +52,7 @@ class Board
     position = Array.new(2)
     position[0] = rand(0..7)
     position[1] = rand(0..7)
-    p position
+    puts toChessCoordinates(position)
     position
   end
 
@@ -56,9 +65,23 @@ class Board
     puts "   A  B  C  D  E  F  G  H"
   end
 
+  # Converts position array into chess coordinates as string
+  def toChessCoordinates(position)
+    row_ref = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+    coordinate = ''
+
+    coordinate << row_ref[position[0]]
+    coordinate << (position[1] + 1).to_s
+  end
 end
 
 board = Board.new()
 
 board.drawBoard
 
+test = board.knight.calcMoves
+new_moves_test = board.knight.validateMoves(test)
+
+for moves in new_moves_test
+  puts board.toChessCoordinates(moves)
+end
