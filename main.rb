@@ -3,23 +3,24 @@ class Knight
   attr_accessor :position, :parent, :move_history
 
   MOVEMENT_PATTERN = [ [1,2], [-1,2], [1,-2], [-1, -2], [2,1], [-2,1], [2, -1], [-2, -1] ]
+  # MOVEMENT_PATTERN = [ [1,1], [-1,-1], [1, -1], [-1, 1] ] # Kind of simulates bishop movement, provided target square and start square are same color 
 
-  def initialize(position=[], parent=nil, move_history=[])
+  @@move_history = []
+
+  def initialize(position=[], parent=nil)
     @position = position
     @parent = parent
-    @move_history = [position]
+    @@move_history << position
   end
 
   # Uses knight movement pattern to check next moves from current position
   def calcMoves(current_position=position)
     MOVEMENT_PATTERN.map { |pattern| [@position[0] + pattern[0], @position[1] + pattern[1]] }
-                              .keep_if {|move| Knight.valid?(move)}
-                              .reject { |move| @move_history.include?(move)} # Prevents checking same positions again
-                              .map { |move| Knight.new(move, self)} # Updates the history of each position
-    
+                    .keep_if { |move| Knight.valid?(move) } # Ensures positions within the chess board
+                    .reject { |move| @@move_history.include?(move) } # Prevents checking same positions again
+                    .map { |move| Knight.new(move, self) } # Updates parent position and history of each position
   end
 
-  # Keeps positions within the chess board
   def self.valid?(position)
     position[0].between?(0, 7) && position[1].between?(0, 7)
   end
