@@ -10,16 +10,16 @@ class Knight
     @move_history = [position]
   end
 
+  # Uses knight movement pattern to check next moves from current position
   def calcMoves(current_position=position)
-    
-
     MOVEMENT_PATTERN.map { |pattern| [@position[0] + pattern[0], @position[1] + pattern[1]] }
                               .keep_if {|move| Knight.valid?(move)}
-                              .reject { |move| @move_history.include?(move)}
-                              .map { |move| Knight.new(move, self)}
+                              .reject { |move| @move_history.include?(move)} # Prevents checking same positions again
+                              .map { |move| Knight.new(move, self)} # Updates the history of each position
     
   end
 
+  # Keeps positions within the chess board
   def self.valid?(position)
     position[0].between?(0, 7) && position[1].between?(0, 7)
   end
@@ -49,6 +49,8 @@ class Board
 
   # Draws board and labels coordinates conventionally as per chess rules
   def drawBoard()
+
+    # Labels the path to reach target
     pathCount = 1
     path.each { |position| board[position[1]][position[0]] = pathCount; pathCount += 1}
 
@@ -58,21 +60,23 @@ class Board
     puts "   A  B  C  D  E  F  G  H"
   end
 
-  # Converts position array into chess coordinates as string
+  # Converts position array into chess coordinates
   def toChessCoordinates(position)
     row_ref = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
     coordinate = ''
-    
+
     coordinate << row_ref[position[0]]
     coordinate << (position[1] + 1).to_s
   end
 
+  # Displays the path sequentially
   def display_move_history(node)
     display_move_history(node.parent) unless node.parent.nil?
     @path << node.position 
     puts toChessCoordinates(node.position)
   end
 
+  # Calculates the fastest route for knight using BFS searching algo and outputs the path
   def knight_moves(start_pos=@start, end_position=@target)
     queue = []
     current_node = Knight.new(start_pos)
@@ -81,16 +85,12 @@ class Board
       current_node = queue.shift
     end
     
-    display_move_history(current_node)
+    display_move_history(current_node) 
     drawBoard()
 
   end
 
 end
 
-
-
-
 quickest_move = Board.new()
-
 quickest_move.knight_moves()
